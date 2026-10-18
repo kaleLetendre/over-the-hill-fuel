@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    MelonLoader mod for Over the Hill. Builds against the game's MelonLoader
+    install: run the game once with MelonLoader so MelonLoader/Il2CppAssemblies exists.
+    Override GameDir if the game isn't in the default Steam library:
+      dotnet build -p:GameDir="/path/to/over the hill"
+  -->
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>OTH.Fuel</AssemblyName>
+    <RootNamespace>OTH.Fuel</RootNamespace>
+    <Version>0.3.0</Version>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <GameDir Condition="'$(GameDir)' == ''">$(HOME)/.steam/steam/steamapps/common/over the hill</GameDir>
+    <MLDir>$(GameDir)/MelonLoader</MLDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- HUD fuel-pump icon, loaded at runtime with ImageConversion.LoadImage. -->
+    <EmbeddedResource Include="../assets/fuel-icon.png" LogicalName="OTH.Fuel.fuel-icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="MelonLoader" HintPath="$(MLDir)/net6/MelonLoader.dll" Private="false" />
+    <Reference Include="0Harmony" HintPath="$(MLDir)/net6/0Harmony.dll" Private="false" />
+    <Reference Include="Il2CppInterop.Runtime" HintPath="$(MLDir)/net6/Il2CppInterop.Runtime.dll" Private="false" />
+    <Reference Include="Il2Cppmscorlib" HintPath="$(MLDir)/Il2CppAssemblies/Il2Cppmscorlib.dll" Private="false" />
+    <Reference Include="Assembly-CSharp" HintPath="$(MLDir)/Il2CppAssemblies/Assembly-CSharp.dll" Private="false" />
+    <Reference Include="Il2CppFusion.Runtime" HintPath="$(MLDir)/Il2CppAssemblies/Il2CppFusion.Runtime.dll" Private="false" />
+    <Reference Include="Il2CppFusion.Sockets" HintPath="$(MLDir)/Il2CppAssemblies/Il2CppFusion.Sockets.dll" Private="false" />
+    <Reference Include="UnityEngine.CoreModule" HintPath="$(MLDir)/Il2CppAssemblies/UnityEngine.CoreModule.dll" Private="false" />
+    <Reference Include="UnityEngine.UI" HintPath="$(MLDir)/Il2CppAssemblies/UnityEngine.UI.dll" Private="false" />
+    <Reference Include="Unity.TextMeshPro" HintPath="$(MLDir)/Il2CppAssemblies/Unity.TextMeshPro.dll" Private="false" />
+    <Reference Include="Unity.Localization" HintPath="$(MLDir)/Il2CppAssemblies/Unity.Localization.dll" Private="false" />
+    <Reference Include="UnityEngine.UIElementsModule" HintPath="$(MLDir)/Il2CppAssemblies/UnityEngine.UIElementsModule.dll" Private="false" />
+    <Reference Include="Il2CppSirenix.Serialization" HintPath="$(MLDir)/Il2CppAssemblies/Il2CppSirenix.Serialization.dll" Private="false" />
+    <Reference Include="UnityEngine.UIModule" HintPath="$(MLDir)/Il2CppAssemblies/UnityEngine.UIModule.dll" Private="false" />
+    <Reference Include="UnityEngine.ImageConversionModule" HintPath="$(MLDir)/Il2CppAssemblies/UnityEngine.ImageConversionModule.dll" Private="false" />
+    <Reference Include="Il2CppFunselektor.FunCore.Runtime" HintPath="$(MLDir)/Il2CppAssemblies/Il2CppFunselektor.FunCore.Runtime.dll" Private="false" />
+  </ItemGroup>
+
+</Project>

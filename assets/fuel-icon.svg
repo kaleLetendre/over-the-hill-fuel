@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <!-- Jerry can, outline style. Drawn black on white; png.py turns darkness into alpha. -->
+  <g fill="none" stroke="#000" stroke-width="16" stroke-linejoin="round" stroke-linecap="round">
+    <!-- body with the top-left corner cut where the spout sits -->
+    <path d="M92 40 H200 Q220 40 220 60 V220 Q220 236 204 236 H60 Q44 236 44 220 V104 Q44 92 54 86 Z"/>
+    <!-- carry handle opening -->
+    <path d="M110 64 H192 L162 92 H100 Z"/>
+    <!-- embossed X with centre panel -->
+    <rect x="104" y="128" width="56" height="64" rx="4"/>
+    <path d="M104 128 L84 108 M160 128 L180 108 M104 192 L84 212 M160 192 L180 212"/>
+  </g>
+  <!-- spout cap -->
+  <g transform="rotate(-30 46 62)">
+    <rect x="22" y="44" width="48" height="34" rx="6" fill="#000"/>
+    <rect x="34" y="56" width="24" height="8" rx="3" fill="#fff"/>
+  </g>
+</svg>
