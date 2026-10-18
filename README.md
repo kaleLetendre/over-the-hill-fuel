@@ -48,7 +48,7 @@ How fast a car burns fuel comes from its engine in the game, so thirsty engines 
 | Grizzly | Fiat Panda 4x4 | 35 L | 1.75 L |
 | Rancho | Matra-Simca Rancho | 56 L | 2.8 L |
 
-The real models come from the [Real Vehicle Names](https://www.nexusmods.com/overthehill) mod. Tank sizes are stock figures, for the base model where a car had options. A car the mod doesn't recognise gets 60 L (3 L in the game).
+The real models come from the [Real Vehicle Names](https://www.nexusmods.com/overthehill/mods/35) mod. Tank sizes are stock figures, for the base model where a car had options. A car the mod doesn't recognise gets 60 L (3 L in the game).
 
 ---
 
