@@ -10,9 +10,9 @@ A MelonLoader mod that adds **fuel** to *Over the Hill*.
 - **Fuel bar:** sits on the right above the gear display. Green, or red when low.
 - **Saving:** fuel levels and equipped cans are saved with your game. The game's own save file never holds anything from the mod, so removing the mod leaves a save the game can read.
 
-**Status:** tested on Linux (Proton), single player.
+**Status:** tested on Linux (Proton) and Windows, single player and online multiplayer (host on Linux, client on Windows).
 
-> **Untested:** Windows and multiplayer. In multiplayer, **every player needs the mod**. [Reports welcome](https://github.com/kaleLetendre/over-the-hill-fuel/issues).
+> In multiplayer, **every player needs the mod**. [Reports welcome](https://github.com/kaleLetendre/over-the-hill-fuel/issues).
 
 ---
 
@@ -111,7 +111,7 @@ Check: the game folder now has a `Mods` folder. If it doesn't, create one with e
 
 Start the game again. In the MelonLoader console window, look for:
 
-    Fuel v0.3.2
+    Fuel v0.3.3
     ...
     [Fuel] fuel network ready
     Mods loaded.
