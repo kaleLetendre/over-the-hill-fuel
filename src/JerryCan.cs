@@ -50,7 +50,7 @@ internal static class JerryCan
 
     private const string Title = "Jerry can";
 
-    private const string Blurb = "Adds fuel to your car's tank (half a Burro tank). Refills with the rest of the toolbox.";
+    private static string Blurb => $"Adds {Mod.F(CarSpecs.JerryCanLitres)} L of fuel to a car's tank. Refills with the rest of the toolbox.";
 
     private static InventoryItemScriptableObject item;
 

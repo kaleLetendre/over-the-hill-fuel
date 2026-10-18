@@ -4,12 +4,11 @@ A MelonLoader mod that adds **fuel** to *Over the Hill*.
 
 - Cars burn fuel while the engine runs. How much depends on revs and load, from the game's own engine model, so a hard climb uses more than cruising.
 - Each car's tank is based on the real car it's modelled on (table below), scaled down to the map.
-- **Empty tank:** the engine dies and won't restart. Teleport or respawn to get out.
+- **Empty tank:** the engine dies and won't restart. Teleport, respawn or use a jerry can to get out.
 - **Refuelling:** the tank fills whenever the game refills your toolbox: the mechanic, cabins, portals, teleport and respawn. Camping does **not** refuel.
-- **Jerry can:** a new tool. Equip it at the mechanic like any other tool, up to 2 per car. Each can adds half a Burro tank, to your car or another player's. It refills with the rest of the toolbox.
+- **Jerry can:** a new tool. Equip it at the mechanic like any other tool, up to 2 per car. Each can adds 1.75 L of fuel (at the default TankRatio), to your car or another player's. It refills with the rest of the toolbox.
 - **Fuel bar:** sits on the right above the gear display. Green, or red when low.
 - **Saving:** fuel levels and equipped cans are saved with your game. The game's own save file never holds anything from the mod, so removing the mod leaves a save the game can read.
-- **Flooding** and fuel are separate. Drying out a flooded engine doesn't let an empty one start.
 
 **Status:** tested on Linux (Proton), single player.
 
@@ -21,7 +20,7 @@ A MelonLoader mod that adds **fuel** to *Over the Hill*.
 
 The map is much smaller than real-world distances, so a real-sized tank would never run low. Each car gets its real car's stock tank, divided by **TankRatio** (default 20, see [Settings](#settings)). So a 70 L tank holds 3.5 L in the game. Raise the ratio for smaller tanks and more fuel stops, or lower it for more range.
 
-How fast a car burns fuel comes from its engine in the game, so thirsty engines drain faster on their own. A jerry can adds half a Burro tank (35 L real, 1.75 L at ratio 20), the same for every car.
+How fast a car burns fuel comes from its engine in the game, so thirsty engines drain faster on their own. A jerry can adds 1.75 L at ratio 20 (35 L real), the same for every car.
 
 | In-game car | Real car | Stock tank | In game (ratio 20) |
 |---|---|---|---|
@@ -177,7 +176,7 @@ The DLL isn't in the `Mods` folder, or it's inside a subfolder. It must be `Mods
 Single player still works fully. Only jerry cans on other players' cars, and their fuel levels in the picker, are off. Please [open an issue](https://github.com/kaleLetendre/over-the-hill-fuel/issues) with the log.
 
 **The engine won't start**
-Check the fuel bar. If it's empty, teleport or respawn: that refills the toolbox and the tank. A flooded engine also won't start until it dries out, exactly as without the mod.
+Check the fuel bar. If it's empty, use a jerry can, or teleport or respawn: that refills the toolbox and the tank. A flooded engine also won't start until it dries out, exactly as without the mod.
 
 **The game crashes on start or gets stuck loading after installing the mod**
 Remove `Mods/OTH.Fuel.dll` to play without it, and [open an issue](https://github.com/kaleLetendre/over-the-hill-fuel/issues) with `MelonLoader/Latest.log`. Say which other mods you have.
