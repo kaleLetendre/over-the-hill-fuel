@@ -42,7 +42,8 @@ internal static class CarSpecs
         ["Boar"] = 60f,         // Volvo TP21 Sugga
         ["Burro"] = 70f,        // Toyota Land Cruiser FJ45
         ["Timberbox"] = 68f,    // Dodge Power Wagon woodie
-        ["Panda"] = 35f,        // Fiat Panda 4x4 (Grizzly)
+        ["Panda"] = 35f,        // Fiat Panda 4x4 (Grizzly; asset name unconfirmed,
+        ["Grizzly"] = 35f,      // the game files have a Car_Grizzly prefab)
         ["Rancho"] = 56f,       // Matra-Simca Rancho
     };
 
