@@ -78,6 +78,10 @@ internal sealed class Tank
     // We set Engine.allowedFuelRatio to 0, so we may restore it.
     private bool ownFuelCut;
 
+    // Engine.allowedFuelRatio before our fuel cut, put back on refuel (the
+    // game may not run it at exactly 1).
+    private float savedFuelRatio = 1f;
+
     // How often something reset allowedFuelRatio while we held it at 0.
     private int fuelCutOverwrites;
 
@@ -208,7 +212,7 @@ internal sealed class Tank
             Engine e = Vehicle != null ? Vehicle.m_engine : null;
             if (ownFuelCut && e != null && e.allowedFuelRatio == 0f)
             {
-                e.allowedFuelRatio = 1f;
+                e.allowedFuelRatio = savedFuelRatio;
             }
             ownFuelCut = false;
             if (ownBlock && Status.HasStateAuthority && Ignition.EngineStartBlocked)
@@ -596,6 +600,10 @@ internal sealed class Tank
                 // Something reset it while we held it at 0.
                 fuelCutOverwrites++;
             }
+            else
+            {
+                savedFuelRatio = e.allowedFuelRatio;
+            }
             e.allowedFuelRatio = 0f;
             ownFuelCut = true;
         }
@@ -680,8 +688,9 @@ internal sealed class Tank
                 : $"was reset {fuelCutOverwrites} time(s) while empty (the game or VPP writes it)"));
             if (e != null && e.allowedFuelRatio == 0f)
             {
-                e.allowedFuelRatio = 1f;
+                e.allowedFuelRatio = savedFuelRatio;
             }
+            Mod.Log.Msg($"'{Name}': allowedFuelRatio back to {Mod.F(savedFuelRatio)}");
         }
         ownFuelCut = false;
         fuelCutOverwrites = 0;

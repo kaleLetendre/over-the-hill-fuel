@@ -243,3 +243,7 @@ Phase 3 (jerry can):
   - The client's status messages reached the host every 2 s (21 bytes), but with key `00000046 00000000 <garbage>`. Only the first byte of Key0 survived. The host self-test arrived the same way.
   - The interop `ReliableKey` struct is one byte, because its 16-byte fixed buffer collapses to `FixedElementField`, so the interop wrapper sends only one byte of the key.
   - v0.3.2 calls `SendReliableDataToPlayer` / `ToServer` through `il2cpp_runtime_invoke`, with our own 16-byte key buffer and span struct.
+- First working online session (v0.3.2): the self-test passed, the client's status arrived, and cans worked in both directions (`jerry can from player 2 (+1.75 L)`).
+- The user reported a short freeze and garbled sound around a jerry can use on their own empty car (15:35:55). The log has no errors or warnings there; the last lines before it are the refuel from 0, "allowedFuelRatio stayed at 0", and the start block lifted.
+  - One suspect: the refuel set `allowedFuelRatio = 1` instead of the value it had before the cut. The value from before the cut is now saved and put back, and logged.
+  - Not reproduced yet.
