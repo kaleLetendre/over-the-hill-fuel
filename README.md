@@ -111,7 +111,7 @@ Check: the game folder now has a `Mods` folder. If it doesn't, create one with e
 
 Start the game again. In the MelonLoader console window, look for:
 
-    Fuel v0.3.0
+    Fuel v0.3.1
     ...
     [Fuel] fuel network ready
     Mods loaded.

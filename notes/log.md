@@ -232,3 +232,10 @@ Phase 3 (jerry can):
 - The receive prefix (on a method taking `ReadOnlySpan<byte>`) is applied by hand in `Net.Patch`, so a failure there only disables networking. The startup log says "fuel network ready" or "Fuel network unavailable".
 - Picker: buttons of cars with known fuel (our own plus known players') show their fuel; the others are disabled. `HealPlayer(playerToHeal, …)` routes the can: the local car gets AddFuel, another car gets `Net.SendRefuel`. The can is consumed only when the send went out.
 - Untested: needs two players with the mod.
+- First online test (2026-10-18, the user hosting, a Windows friend as client):
+  - The client tracked its own car with input but not state authority (`state=False input=True`), burned fuel and refuelled normally.
+  - The host never got a status from the client, so the client's car was greyed out in the picker. Neither log has errors or network warnings.
+  - v0.3.1 adds always-on diagnostics:
+    - "fuel status: sending …" when a game starts sending, or "fuel status not sent: <reason>".
+    - The first 10 network messages received, with their keys.
+    - A host self-test, where the host sends a message to itself.

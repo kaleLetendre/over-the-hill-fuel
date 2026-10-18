@@ -42,6 +42,18 @@ internal static class Net
 
     private const int Refuel = 2;
 
+    // Host to itself once per session: checks send and receive work.
+    private const int Ping = 3;
+
+    // Diagnostics (always logged, a few times only): what was sent and received.
+    private static int receivedLogged;
+
+    private static bool sentLogged;
+
+    private static bool pinged;
+
+    private static string lastSkip;
+
     private const int Version = 1;
 
     private const float StatusInterval = 2f;
@@ -121,9 +133,22 @@ internal static class Net
         try
         {
             NetworkRunner r = Runner();
-            if (r == null || r.IsSinglePlayer || tank == null || tank.Capacity <= 0f)
+            string skip = r == null ? "no running network session" : r.IsSinglePlayer ? "single player" : tank == null ? "no car tracked" : tank.Capacity <= 0f ? "car not known yet" : null;
+            if (skip != null)
             {
+                if (skip != lastSkip)
+                {
+                    lastSkip = skip;
+                    Mod.Log.Msg($"fuel status not sent: {skip}");
+                }
                 return;
+            }
+            lastSkip = null;
+            if (r.IsServer && !pinged)
+            {
+                pinged = true;
+                Send(r, LocalPlayer, Pack(Ping, LocalPlayer, LocalPlayer, 0f, 0));
+                Mod.Log.Msg("fuel network self-test sent (host to itself)");
             }
             float frac = tank.Empty ? 0f : Mathf.Clamp01(tank.Fuel / tank.Capacity);
             byte[] msg = Pack(Status, PlayerRef.None, LocalPlayer, frac, tank.Empty ? (byte)1 : (byte)0);
@@ -134,6 +159,11 @@ internal static class Net
             else
             {
                 Send(r, null, msg);
+            }
+            if (!sentLogged)
+            {
+                sentLogged = true;
+                Mod.Log.Msg($"fuel status: sending every {StatusInterval} s as {(r.IsServer ? "host, to known players" : "client, to the host")} (player {LocalPlayer.PlayerId})");
             }
         }
         catch (Exception ex)
@@ -254,6 +284,12 @@ internal static class Net
         try
         {
             int* k = (int*)key;
+            if (receivedLogged < 10 && key != IntPtr.Zero)
+            {
+                receivedLogged++;
+                int n = data != IntPtr.Zero ? *(int*)((byte*)data + 8) : -1;
+                Mod.Log.Msg($"network data from player {PlayerRef.FromEncoded(player).PlayerId}: key {k[0]:X8} {k[1]:X8} {k[2]:X8} {k[3]:X8}, {n} bytes");
+            }
             if (key != IntPtr.Zero && k[0] == Key0 && k[1] == Key1)
             {
                 // Ours: never let the game's handler see it (it throws).
@@ -317,6 +353,9 @@ internal static class Net
                 {
                     Broadcast(r, b, origin);
                 }
+                break;
+            case Ping:
+                Mod.Log.Msg("fuel network self-test received: sending and receiving work");
                 break;
             case Refuel:
                 if (target == local)
