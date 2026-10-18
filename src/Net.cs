@@ -208,19 +208,67 @@ internal static class Net
     }
 
     // To one player (host only), or to the host when target is null.
-    private static void Send(NetworkRunner r, PlayerRef? target, byte[] msg)
+    //
+    // Called through il2cpp_runtime_invoke with our own argument buffers, not
+    // the interop wrappers: the interop ReliableKey is 1 byte (its fixed
+    // buffer collapses to one field), so the wrapper sent our key with only
+    // its first byte right and garbage after it (seen in the first online
+    // test). runtime_invoke takes a pointer to each argument's value: the
+    // 16-byte key and the span {byte* pointer, int length}.
+    private static unsafe void Send(NetworkRunner r, PlayerRef? target, byte[] msg)
     {
-        Il2CppStructArray<byte> arr = new(msg);
-        Il2CppSystem.ReadOnlySpan<byte> span = new(arr);
-        ReliableKey key = ReliableKey.FromInts(Key0, Key1, 0, 0);
-        if (target.HasValue)
+        IntPtr info = target.HasValue ? ToPlayerInfo : ToServerInfo;
+        if (info == IntPtr.Zero)
         {
-            r.SendReliableDataToPlayer(target.Value, key, span);
+            throw new MissingMethodException("NetworkRunner.SendReliableData method info not found");
         }
-        else
+        int* key = stackalloc int[4];
+        key[0] = Key0;
+        key[1] = Key1;
+        key[2] = 0;
+        key[3] = 0;
+        IntPtr buf = Marshal.AllocHGlobal(msg.Length);
+        try
         {
-            r.SendReliableDataToServer(key, span);
+            Marshal.Copy(msg, 0, buf, msg.Length);
+            long* span = stackalloc long[2];
+            span[0] = (long)buf;
+            span[1] = msg.Length;
+            int player = target.HasValue ? target.Value.RawEncoded : 0;
+            void** args = stackalloc void*[3];
+            if (target.HasValue)
+            {
+                args[0] = &player;
+                args[1] = key;
+                args[2] = span;
+            }
+            else
+            {
+                args[0] = key;
+                args[1] = span;
+            }
+            IntPtr exc = IntPtr.Zero;
+            Il2CppInterop.Runtime.IL2CPP.il2cpp_runtime_invoke(info, r.Pointer, args, ref exc);
+            Il2CppInterop.Runtime.Il2CppException.RaiseExceptionIfNecessary(exc);
         }
+        finally
+        {
+            Marshal.FreeHGlobal(buf);
+        }
+    }
+
+    private static IntPtr toPlayerInfo, toServerInfo;
+
+    private static IntPtr ToPlayerInfo => toPlayerInfo != IntPtr.Zero ? toPlayerInfo
+        : toPlayerInfo = MethodInfoField(typeof(NetworkRunner), "NativeMethodInfoPtr_SendReliableDataToPlayer_Public_Void_PlayerRef_ReliableKey_ReadOnlySpan_1_Byte_0");
+
+    private static IntPtr ToServerInfo => toServerInfo != IntPtr.Zero ? toServerInfo
+        : toServerInfo = MethodInfoField(typeof(NetworkRunner), "NativeMethodInfoPtr_SendReliableDataToServer_Public_Void_ReliableKey_ReadOnlySpan_1_Byte_0");
+
+    private static IntPtr MethodInfoField(Type t, string name)
+    {
+        FieldInfo f = t.GetField(name, BindingFlags.NonPublic | BindingFlags.Static);
+        return f != null ? (IntPtr)f.GetValue(null) : IntPtr.Zero;
     }
 
     // Host: a status to every modded player except its origin.

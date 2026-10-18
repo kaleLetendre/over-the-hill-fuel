@@ -239,3 +239,7 @@ Phase 3 (jerry can):
     - "fuel status: sending …" when a game starts sending, or "fuel status not sent: <reason>".
     - The first 10 network messages received, with their keys.
     - A host self-test, where the host sends a message to itself.
+- The v0.3.1 logs showed the cause:
+  - The client's status messages reached the host every 2 s (21 bytes), but with key `00000046 00000000 <garbage>`. Only the first byte of Key0 survived. The host self-test arrived the same way.
+  - The interop `ReliableKey` struct is one byte, because its 16-byte fixed buffer collapses to `FixedElementField`, so the interop wrapper sends only one byte of the key.
+  - v0.3.2 calls `SendReliableDataToPlayer` / `ToServer` through `il2cpp_runtime_invoke`, with our own 16-byte key buffer and span struct.
