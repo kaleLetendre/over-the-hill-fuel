@@ -34,8 +34,6 @@ public class Mod : MelonMod
 
     private static MelonPreferences_Entry<bool> prefDebug;
 
-    private static MelonPreferences_Entry<bool> prefMultiplayer;
-
     internal static bool Enabled => prefEnabled.Value;
 
     internal static float FuelScale => Tank.Sane(prefFuelScale.Value);
@@ -46,8 +44,6 @@ public class Mod : MelonMod
     internal static float LowFuelThreshold => Mathf.Clamp01(prefLowFuel.Value);
 
     internal static bool DebugLog => prefDebug.Value;
-
-    internal static bool Multiplayer => prefMultiplayer.Value;
 
     private const float BarInterval = 0.1f;
 
@@ -64,7 +60,7 @@ public class Mod : MelonMod
         prefTankRatio = cat.CreateEntry("TankRatio", 20f, description: "Real tank size divided by this is the in-game tank (20 = a 70 L tank holds 3.5 L). Applies to the next car spawn");
         prefLowFuel = cat.CreateEntry("LowFuelThreshold", 0.2f, description: "Tank fraction below which the fuel bar turns red (0..1)");
         prefDebug = cat.CreateEntry("DebugLog", false, description: "Log burn rate (L/min) every 30 s, for calibrating tank sizes");
-        prefMultiplayer = cat.CreateEntry("Multiplayer", true, description: "Share fuel with other modded players online (jerry cans on their cars). Set false if another mod's networking conflicts");
+        Net.Hook();
     }
 
     public override void OnUpdate()

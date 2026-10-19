@@ -10,7 +10,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>OTH.Fuel</AssemblyName>
     <RootNamespace>OTH.Fuel</RootNamespace>
-    <Version>0.3.4</Version>
+    <Version>0.3.3</Version>
     <Nullable>disable</Nullable>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
