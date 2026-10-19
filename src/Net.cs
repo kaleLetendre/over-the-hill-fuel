@@ -117,13 +117,13 @@ internal static class Net
     // game would throw on our messages just like an unmodded one.
     private static bool ready;
 
+    // The hook is put in once, when the first online session starts, so
+    // single player never runs through it.
+    private static bool hookTried;
+
     // Called at 10 Hz from Mod.OnUpdate.
     internal static void Tick(Tank tank)
     {
-        if (!ready)
-        {
-            return;
-        }
         float now = Time.unscaledTime;
         if (now < nextStatus)
         {
@@ -133,6 +133,18 @@ internal static class Net
         try
         {
             NetworkRunner r = Runner();
+            if (!ready)
+            {
+                if (!hookTried && Mod.Multiplayer && r != null && !r.IsSinglePlayer)
+                {
+                    hookTried = true;
+                    Hook();
+                }
+                if (!ready)
+                {
+                    return;
+                }
+            }
             string skip = r == null ? "no running network session" : r.IsSinglePlayer ? "single player" : tank == null ? "no car tracked" : tank.Capacity <= 0f ? "car not known yet" : null;
             if (skip != null)
             {
@@ -314,11 +326,20 @@ internal static class Net
             }
             // Il2CppMethodInfo starts with the method pointer.
             IntPtr target = *(IntPtr*)info;
+            // Another mod (e.g. a newer CosmeticMover) may already hook this
+            // function; a second native hook on top of it can crash the game,
+            // so leave it alone. Compiled IL2CPP functions never start with a jump.
+            byte* code = (byte*)target;
+            if (code[0] == 0xE9 || (code[0] == 0xFF && code[1] == 0x25) || (code[0] == 0x48 && code[1] == 0xB8) || (code[0] == 0x49 && (code[1] == 0xBA || code[1] == 0xBB)))
+            {
+                Mod.Log.Warning("Fuel network off (jerry cans work on your own car only): another mod already hooks the game's network receive");
+                return;
+            }
             detour = Receive;
             hook = new NativeHook<ReceiveFn>(target, Marshal.GetFunctionPointerForDelegate(detour));
             hook.Attach();
             ready = true;
-            Mod.Log.Msg("fuel network ready");
+            Mod.Log.Msg("fuel network ready (online session)");
         }
         catch (Exception ex)
         {

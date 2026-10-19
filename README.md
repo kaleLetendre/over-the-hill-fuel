@@ -111,7 +111,7 @@ Check: the game folder now has a `Mods` folder. If it doesn't, create one with e
 
 Start the game again. In the MelonLoader console window, look for:
 
-    Fuel v0.3.3
+    Fuel v0.3.4
     ...
     [Fuel] fuel network ready
     Mods loaded.
@@ -155,6 +155,8 @@ Then continue with [Step 6 of the Linux guide](#step-6-start-the-game-and-check-
 
 ## Multiplayer
 
+- The mod's network hook goes in only when you join or host an online session, never in single player.
+- If another mod already hooks the game's network receive, the fuel network stays off (`Fuel network off` in the log): jerry cans then only fill your own car. Setting `Multiplayer = false` turns it off by hand.
 - **Every player in the session needs the mod.** An equipped jerry can is part of your car's tools, which other players' games receive.
 - Each player's fuel lives on their own machine. Players with the mod send each other their fuel level every 2 s, so the jerry can picker can show it.
 - Using a jerry can on another player's car sends its fuel to that player's game. You keep the can if their tank is already full.
@@ -172,7 +174,7 @@ MelonLoader isn't loading. On Linux, check the launch option from [Step 3](#step
 **The log doesn't mention `Fuel` at all, or says `0 Mods loaded`**
 The DLL isn't in the `Mods` folder, or it's inside a subfolder. It must be `Mods/OTH.Fuel.dll`. On Windows, also check it's unblocked.
 
-**The log says `Fuel network unavailable`**
+**The log says `Fuel network unavailable` or `Fuel network off`**
 Single player still works fully. Only jerry cans on other players' cars, and their fuel levels in the picker, are off. Please [open an issue](https://github.com/kaleLetendre/over-the-hill-fuel/issues) with the log.
 
 **The engine won't start**
@@ -194,6 +196,7 @@ Remove `Mods/OTH.Fuel.dll` to play without it, and [open an issue](https://githu
 | `FuelScale` | `1` | Consumption multiplier: 0.5 = half as thirsty, 2 = twice as thirsty |
 | `LowFuelThreshold` | `0.2` | Tank fraction below which the fuel bar turns red |
 | `DebugLog` | `false` | Log the burn rate every 30 s and jerry can details |
+| `Multiplayer` | `true` | Share fuel with other modded players online, so a jerry can can fill their car. Set `false` if another mod's networking conflicts with it |
 
 ## Saved data
 
