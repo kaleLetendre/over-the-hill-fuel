@@ -247,3 +247,11 @@ Phase 3 (jerry can):
 - The user reported a short freeze and garbled sound around a jerry can use on their own empty car (15:35:55). The log has no errors or warnings there; the last lines before it are the refuel from 0, "allowedFuelRatio stayed at 0", and the start block lifted.
   - One suspect: the refuel set `allowedFuelRatio = 1` instead of the value it had before the cut. The value from before the cut is now saved and put back, and logged.
   - Not reproduced yet.
+
+## v0.3.4: Windows hook install failing with error 1450
+
+A Windows client (friend's log, Fuel 0.3.2) had `Fuel network unavailable: InvalidOperationException: Could not create snapshot to process. Error 1450.` from `CoreClrDelegateFixer.SanityCheckDetour` inside `NativeHook.Attach`. With the hook off she never sent a status, so the host never saw her as modded (no "player 2 runs the fuel mod").
+
+MelonLoader 0.7.3 source (`BootstrapInterop.NativeHookAttach`): on Windows it first takes a ClrMD process snapshot (PssCaptureSnapshot) to check the detour isn't a bare managed method; under Wine/Proton the check is skipped, which is why Linux never hit it. Error 1450 is ERROR_NO_SYSTEM_RESOURCES, and it had worked on her machine in the first online test, so it's intermittent.
+
+Fix: if `Attach` throws, call the internal `BootstrapInterop.NativeHookAttachDirect(&target, detour)` by reflection (the same call Proton uses) and take the trampoline it writes back. Our detour is an [UnmanagedFunctionPointer] delegate, so the skipped check would have passed. Not testable on Linux; needs a Windows log showing "fuel network ready (direct hook)".

@@ -111,7 +111,7 @@ Check: the game folder now has a `Mods` folder. If it doesn't, create one with e
 
 Start the game again. In the MelonLoader console window, look for:
 
-    Fuel v0.3.3
+    Fuel v0.3.4
     ...
     [Fuel] fuel network ready
     Mods loaded.
@@ -173,7 +173,7 @@ MelonLoader isn't loading. On Linux, check the launch option from [Step 3](#step
 The DLL isn't in the `Mods` folder, or it's inside a subfolder. It must be `Mods/OTH.Fuel.dll`. On Windows, also check it's unblocked.
 
 **The log says `Fuel network unavailable`**
-Single player still works fully. Only jerry cans on other players' cars, and their fuel levels in the picker, are off. Please [open an issue](https://github.com/kaleLetendre/over-the-hill-fuel/issues) with the log.
+Single player still works fully. Only jerry cans on other players' cars, and their fuel levels in the picker, are off. Make sure you're on the latest version: from 0.3.4, a Windows-only MelonLoader check that could fail at startup (`Could not create snapshot to process. Error 1450`) no longer stops the network; the log then says `fuel network ready (direct hook)`. If it still says unavailable, please [open an issue](https://github.com/kaleLetendre/over-the-hill-fuel/issues) with the log.
 
 **The engine won't start**
 Check the fuel bar. If it's empty, use a jerry can, or teleport or respawn: that refills the toolbox and the tank. A flooded engine also won't start until it dries out, exactly as without the mod.

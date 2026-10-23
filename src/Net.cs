@@ -295,10 +295,13 @@ internal static class Net
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate void ReceiveFn(IntPtr self, IntPtr runner, int player, IntPtr key, IntPtr data, IntPtr method);
 
-    private static NativeHook<ReceiveFn> hook;
+    // The game's original function, called for everything that isn't ours.
+    private static ReceiveFn original;
 
-    // Kept alive: the native side calls it.
+    // Kept alive: the native side calls them.
     private static ReceiveFn detour;
+
+    private static NativeHook<ReceiveFn> hook;
 
     internal static unsafe void Hook()
     {
@@ -315,15 +318,49 @@ internal static class Net
             // Il2CppMethodInfo starts with the method pointer.
             IntPtr target = *(IntPtr*)info;
             detour = Receive;
-            hook = new NativeHook<ReceiveFn>(target, Marshal.GetFunctionPointerForDelegate(detour));
-            hook.Attach();
+            IntPtr detourPtr = Marshal.GetFunctionPointerForDelegate(detour);
+            try
+            {
+                hook = new NativeHook<ReceiveFn>(target, detourPtr);
+                hook.Attach();
+                original = hook.Trampoline;
+                Mod.Log.Msg("fuel network ready");
+            }
+            catch (Exception ex)
+            {
+                // On Windows, NativeHook.Attach first runs MelonLoader's
+                // CoreClrDelegateFixer.SanityCheckDetour, which snapshots the
+                // whole process and can fail ("Could not create snapshot to
+                // process. Error 1450", out of system resources). It only
+                // catches detours that aren't unmanaged delegates; ours is one,
+                // so hook directly with the same native call, which Proton
+                // always uses (the check is skipped there).
+                Mod.Log.Msg("fuel network: normal hook failed (" + ex.GetType().Name + ": " + ex.Message + "), hooking directly");
+                original = AttachDirect(target, detourPtr);
+                Mod.Log.Msg("fuel network ready (direct hook)");
+            }
             ready = true;
-            Mod.Log.Msg("fuel network ready");
         }
         catch (Exception ex)
         {
             Mod.Log.Warning("Fuel network unavailable (multiplayer jerry cans off): " + ex);
         }
+    }
+
+    // MelonLoader's internal BootstrapInterop.NativeHookAttachDirect(nint* target, detour):
+    // writes the trampoline (the original function) back into *target.
+    private static unsafe ReceiveFn AttachDirect(IntPtr target, IntPtr detourPtr)
+    {
+        Type interop = typeof(NativeHook<ReceiveFn>).Assembly.GetType("MelonLoader.InternalUtils.BootstrapInterop", true);
+        MethodInfo direct = interop.GetMethod("NativeHookAttachDirect", BindingFlags.NonPublic | BindingFlags.Static)
+            ?? throw new MissingMethodException("BootstrapInterop.NativeHookAttachDirect");
+        IntPtr trampoline = target;
+        direct.Invoke(null, new object[] { (IntPtr)(&trampoline), detourPtr });
+        if (trampoline == IntPtr.Zero || trampoline == target)
+        {
+            throw new InvalidOperationException("direct hook gave no trampoline");
+        }
+        return Marshal.GetDelegateForFunctionPointer<ReceiveFn>(trampoline);
     }
 
     private static unsafe void Receive(IntPtr self, IntPtr runner, int player, IntPtr key, IntPtr data, IntPtr method)
@@ -358,7 +395,7 @@ internal static class Net
         }
         if (!ours)
         {
-            hook.Trampoline(self, runner, player, key, data, method);
+            original(self, runner, player, key, data, method);
         }
     }
 
